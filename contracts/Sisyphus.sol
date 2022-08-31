@@ -169,7 +169,7 @@ contract Sisyphus is Ownable, ReentrancyGuard{
         return (currentPrice * GameParamsByGame[_game].percentRateIncrease) / percentBasis;
     }
 
-    // Allows the platform to withdraw accrued revenue (mostly to pay for gas resetting the game)
+    // Allows the platform to withdraw accrued revenue
     function ownerWithdraw(uint256 amount) external payable onlyOwner {
         require(amount <= reserve, "Withdrawal amount must be less than reserves available");
             payable(msg.sender).transfer(amount);
