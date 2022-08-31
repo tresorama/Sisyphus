@@ -1,23 +1,38 @@
+
 import { ethers } from "hardhat";
+import * as logger from "../utils/logger"
+import * as fs from "fs";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+async function deploy() {
 
-  const lockedAmount = ethers.utils.parseEther("1");
+  let deployer: SignerWithAddress
+  [deployer] = await ethers.getSigners()
+  
+  const network = await ethers.provider.getNetwork()
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  logger.divider()
+  logger.out("Deploying to: " + network.name, logger.Level.Info)
+  logger.out("With chain id: " + network.chainId, logger.Level.Info)
 
-  await lock.deployed();
+  const Sis = await ethers.getContractFactory("Sisyphus");
+  const sis = await Sis.deploy();
 
-  console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
+  await sis.deployed();
+
+  logger.pad(30, "Deployed to:", sis.address);
+
+  logger.divider()
+  logger.out("Writing to address.json", logger.Level.Info)
+
+  let rawdata = fs.readFileSync('address.json', "utf8")
+  let address: any = JSON.parse(rawdata)
+  address[network.chainId] = sis.address
+  const json = JSON.stringify(address, null, 2)
+  fs.writeFileSync('address.json', json, "utf8")
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
+deploy().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
