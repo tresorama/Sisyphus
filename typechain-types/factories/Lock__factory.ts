@@ -10,8 +10,8 @@ import {
   BigNumberish,
 } from "ethers";
 import type { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { PromiseOrValue } from "../../common";
-import type { Lock, LockInterface } from "../../contracts/Lock";
+import type { PromiseOrValue } from "../common";
+import type { Lock, LockInterface } from "../Lock";
 
 const _abi = [
   {
