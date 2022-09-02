@@ -61,10 +61,11 @@ contract Sisyphus is Ownable, ReentrancyGuard{
         uint256 startingPrice;
         uint256 timerDuration;
         uint256 percentRateIncrease; // increase for each successive push
-        uint256 percentToBoulder; // push value goes to the Boulder (prize pool)
-        uint256 percentToPushers; // push value goes to previous pushers 
-        uint256 percentToReserve; // push value goes to platform profit
-        uint256 lastPush;
+        uint256 percentToBoulder;   // push value goes to the Boulder (prize pool)
+        uint256 percentToPushers;   // push value goes to previous pushers 
+        uint256 percentToReserve;   // push value goes to platform profit
+        uint256 lastPush;           // last push of the game; "winner" 
+        uint256 boulderAtLastPush;  // boulder value at last push
     }
     mapping(uint256 => GameParams) GameParamsByGame;
     GameParams public PendingParams; // Owner can set new game params while a game is running - will take effect when the next game starts 
@@ -93,8 +94,8 @@ contract Sisyphus is Ownable, ReentrancyGuard{
         require(msg.value == currentPrice,
             "Must push boulder with exactly push price"
         );
-        require(expirationTime < block.timestamp,
-            "The game needs to be reset by the contract operator");
+        require(expirationTime > block.timestamp,
+            "This game is expired; call reset");
 
         // Record push
         pushCount++;
@@ -102,7 +103,7 @@ contract Sisyphus is Ownable, ReentrancyGuard{
         currentWinner = msg.sender;
 
         // Increment boulder value and take some for the reserves 
-        boulder += _getBoulderAdd(gameCount, msg.value);  
+        boulder += _getBoulderAdd(gameCount, msg.value);
         reserve += _getReserveTake(gameCount, msg.value);
 
         // Set up parameters for next push
@@ -112,11 +113,15 @@ contract Sisyphus is Ownable, ReentrancyGuard{
     }
 
     // Anyone can call this when the time is appropriate
-    function resetTheBoulder() external {
+    function resetTheGame() external {
         require(block.timestamp > expirationTime, "Timer has not expired"); 
+        // Store end state params 
         GameParamsByGame[gameCount].lastPush = pushCount;
+        GameParamsByGame[gameCount].boulderAtLastPush = boulder;
+        // Reset game params
         pushCount = 0;
         boulder = 0;
+        // Increment game counter and apply new rules (if any) 
         gameCount++;
         GameParamsByGame[gameCount] = PendingParams;
         expirationTime = lastPushTime + GameParamsByGame[gameCount].timerDuration;
@@ -129,8 +134,12 @@ contract Sisyphus is Ownable, ReentrancyGuard{
         require(pushes.length > 0, "Nothing to withdraw");
         require(gameCount > _game, "Game is not over yet");
         uint256 val;
+        uint256 lastPush = GameParamsByGame[_game].lastPush;
         for (uint256 i; i == 0; i++) {
             uint256 pushNum = pushes[i];
+            if(pushNum == lastPush){
+                val += GameParamsByGame[_game].boulderAtLastPush;
+            }
             val += _valuePerPush(_game, pushNum);
         }
         delete pushNumByPlayerGame[_game][msg.sender];

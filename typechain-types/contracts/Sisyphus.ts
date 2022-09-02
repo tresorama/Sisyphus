@@ -37,9 +37,11 @@ export declare namespace Sisyphus {
     percentToPushers: PromiseOrValue<BigNumberish>;
     percentToReserve: PromiseOrValue<BigNumberish>;
     lastPush: PromiseOrValue<BigNumberish>;
+    boulderAtLastPush: PromiseOrValue<BigNumberish>;
   };
 
   export type GameParamsStructOutput = [
+    BigNumber,
     BigNumber,
     BigNumber,
     BigNumber,
@@ -55,6 +57,7 @@ export declare namespace Sisyphus {
     percentToPushers: BigNumber;
     percentToReserve: BigNumber;
     lastPush: BigNumber;
+    boulderAtLastPush: BigNumber;
   };
 }
 
@@ -62,7 +65,7 @@ export interface SisyphusInterface extends utils.Interface {
   functions: {
     "PendingParams()": FunctionFragment;
     "boulder()": FunctionFragment;
-    "changeGameParams((uint256,uint256,uint256,uint256,uint256,uint256,uint256))": FunctionFragment;
+    "changeGameParams((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256))": FunctionFragment;
     "claimWinningsByGame(uint256)": FunctionFragment;
     "currentPrice()": FunctionFragment;
     "currentWinner()": FunctionFragment;
@@ -71,7 +74,7 @@ export interface SisyphusInterface extends utils.Interface {
     "pushTheBoulder()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "reserve()": FunctionFragment;
-    "resetTheBoulder()": FunctionFragment;
+    "resetTheGame()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
   };
 
@@ -88,7 +91,7 @@ export interface SisyphusInterface extends utils.Interface {
       | "pushTheBoulder"
       | "renounceOwnership"
       | "reserve"
-      | "resetTheBoulder"
+      | "resetTheGame"
       | "transferOwnership"
   ): FunctionFragment;
 
@@ -128,7 +131,7 @@ export interface SisyphusInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "reserve", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "resetTheBoulder",
+    functionFragment: "resetTheGame",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -172,7 +175,7 @@ export interface SisyphusInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "reserve", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "resetTheBoulder",
+    functionFragment: "resetTheGame",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -236,6 +239,7 @@ export interface Sisyphus extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
+        BigNumber,
         BigNumber
       ] & {
         startingPrice: BigNumber;
@@ -245,6 +249,7 @@ export interface Sisyphus extends BaseContract {
         percentToPushers: BigNumber;
         percentToReserve: BigNumber;
         lastPush: BigNumber;
+        boulderAtLastPush: BigNumber;
       }
     >;
 
@@ -281,7 +286,7 @@ export interface Sisyphus extends BaseContract {
 
     reserve(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    resetTheBoulder(
+    resetTheGame(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -301,6 +306,7 @@ export interface Sisyphus extends BaseContract {
       BigNumber,
       BigNumber,
       BigNumber,
+      BigNumber,
       BigNumber
     ] & {
       startingPrice: BigNumber;
@@ -310,6 +316,7 @@ export interface Sisyphus extends BaseContract {
       percentToPushers: BigNumber;
       percentToReserve: BigNumber;
       lastPush: BigNumber;
+      boulderAtLastPush: BigNumber;
     }
   >;
 
@@ -346,7 +353,7 @@ export interface Sisyphus extends BaseContract {
 
   reserve(overrides?: CallOverrides): Promise<BigNumber>;
 
-  resetTheBoulder(
+  resetTheGame(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -366,6 +373,7 @@ export interface Sisyphus extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
+        BigNumber,
         BigNumber
       ] & {
         startingPrice: BigNumber;
@@ -375,6 +383,7 @@ export interface Sisyphus extends BaseContract {
         percentToPushers: BigNumber;
         percentToReserve: BigNumber;
         lastPush: BigNumber;
+        boulderAtLastPush: BigNumber;
       }
     >;
 
@@ -407,7 +416,7 @@ export interface Sisyphus extends BaseContract {
 
     reserve(overrides?: CallOverrides): Promise<BigNumber>;
 
-    resetTheBoulder(overrides?: CallOverrides): Promise<void>;
+    resetTheGame(overrides?: CallOverrides): Promise<void>;
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,
@@ -462,7 +471,7 @@ export interface Sisyphus extends BaseContract {
 
     reserve(overrides?: CallOverrides): Promise<BigNumber>;
 
-    resetTheBoulder(
+    resetTheGame(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -508,7 +517,7 @@ export interface Sisyphus extends BaseContract {
 
     reserve(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    resetTheBoulder(
+    resetTheGame(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
