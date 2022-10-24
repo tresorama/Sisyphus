@@ -2,7 +2,9 @@
 import { ethers } from "hardhat";
 import * as logger from "../utils/logger"
 import * as fs from "fs";
+import { caseHelper, GameParams, getGameParams, DefaultGameParams}  from "../utils/caseHelper"
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { BigNumber } from "ethers";
 
 async function deploy() {
 
@@ -15,8 +17,9 @@ async function deploy() {
   logger.out("Deploying to: " + network.name, logger.Level.Info)
   logger.out("With chain id: " + network.chainId, logger.Level.Info)
 
+  let initParams: GameParams = DefaultGameParams
   const Sis = await ethers.getContractFactory("Sisyphus");
-  const sis = await Sis.deploy();
+  const sis = await Sis.deploy(initParams);
 
   await sis.deployed();
 

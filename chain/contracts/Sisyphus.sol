@@ -40,13 +40,13 @@
 
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./libraries/ABDKMath64x64.sol";
 
 contract Sisyphus is Ownable, ReentrancyGuard{
 
-    using ABDKMath64x64 for *;
+    //using ABDKMath64x64 for *;
 
     // GAME PARAMETERS 
     address public currentWinner;
@@ -74,20 +74,21 @@ contract Sisyphus is Ownable, ReentrancyGuard{
     uint256 public reserve = 0; 
     uint256 constant percentBasis = 10000; 
 
-    constructor() {
+    // Constructor is called with initial game's params 
+    
+    constructor(GameParams memory initParams) {
         gameCount++;
-        GameParamsByGame[gameCount].startingPrice = 0.005 ether; // start the price at 0.005 ether each round
-        GameParamsByGame[gameCount].timerDuration = 24 hours;
-        GameParamsByGame[gameCount].percentRateIncrease = 100;  // 1% increase for each successive push
-        GameParamsByGame[gameCount].percentToBoulder = 3000;    // 30% of push value goes to the Boulder (prize pool)
-        GameParamsByGame[gameCount].percentToPushers = 6900;    // 69% of push value goes to previous pushers 
-        GameParamsByGame[gameCount].percentToReserve = 100;     // 1% of push value goes to platform profit
-        PendingParams = GameParamsByGame[gameCount];            // Init defaults
+        GameParamsByGame[gameCount].startingPrice       = initParams.startingPrice;         // start the price at 0.005 ether each round
+        GameParamsByGame[gameCount].timerDuration       = initParams.timerDuration;
+        GameParamsByGame[gameCount].percentRateIncrease = initParams.percentRateIncrease;   // 1% increase for each successive push
+        GameParamsByGame[gameCount].percentToBoulder    = initParams.percentToBoulder;      // 30% of push value goes to the Boulder (prize pool)
+        GameParamsByGame[gameCount].percentToPushers    = initParams.percentToPushers;      // 69% of push value goes to previous pushers 
+        GameParamsByGame[gameCount].percentToReserve    = initParams.percentToReserve;      // 1% of push value goes to platform profit
+        PendingParams = GameParamsByGame[gameCount];                                        // Init defaults
         
         // Init params for first game
         expirationTime = block.timestamp + GameParamsByGame[gameCount].timerDuration;
         currentPrice = GameParamsByGame[gameCount].startingPrice;
-                
     }
 
     function pushTheBoulder() external payable {
@@ -175,7 +176,7 @@ contract Sisyphus is Ownable, ReentrancyGuard{
     }
 
     function _getNewPrice(uint256 _game) internal view returns (uint256) {
-        return (currentPrice * GameParamsByGame[_game].percentRateIncrease) / percentBasis;
+        return currentPrice + ((currentPrice * GameParamsByGame[_game].percentRateIncrease) / percentBasis);
     }
 
     // Allows the platform to withdraw accrued revenue
