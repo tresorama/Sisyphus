@@ -37,6 +37,7 @@ export var DefaultGameParams: GameParams = {
     lastPush: 0,                    // initialize as 0 address
     boulderAtLastPush: BigNumber.from(0)
   }
+  
 export async function getGameParams(caseNum: number) : Promise<GameParams> {
     let filepath = `test/case/case${caseNum.toString()}.csv`
     return new Promise(function(resolve,reject){
