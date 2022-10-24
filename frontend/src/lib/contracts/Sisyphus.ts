@@ -1,9 +1,10 @@
 import SisyphusContractArtifact from '../../assets/contracts/Sisyphus.artifact';
 import SisyphusContractAddress from '../../assets/contracts/Sisyphus.address.json';
+import { CHAIN_ID } from '../../constants';
 // import { useContract, useProvider, useSigner } from "wagmi";
 
 // 1. Export Contract Artifacts + Address
-export const contractAddress = SisyphusContractAddress[1337];
+export const contractAddress = SisyphusContractAddress[(CHAIN_ID as keyof typeof SisyphusContractAddress)];
 export const contractABI = SisyphusContractArtifact.abi;
 
 // 2. Export helpers for using the contract in the app.
